@@ -1,0 +1,187 @@
+http:
+  # Region routers 
+  routers:
+    router:
+      entryPoints:
+        - "https"
+      rule: "Host(`router.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      # tls.insecureSkipVerify=true
+      service: router
+
+    ilo:
+      entryPoints:
+        - "https"
+      rule: "Host(`ilo.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: ilo
+
+    ciscoSwitch:
+      entryPoints:
+        - "https"
+      rule: "Host(`ciscoSwitch.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: ciscoSwitch
+
+    HomeAssistant:
+      entryPoints:
+        - "https"
+      rule: "Host(`ha.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: HomeAssistant
+
+    ipCamera:
+      entryPoints:
+        - "https"
+      rule: "Host(`ipCamera.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: ipCamera
+
+    nginx:
+      entryPoints:
+        - "https"
+      rule: "Host(`nginx.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: nginx
+      
+    canon:
+      entryPoints:
+        - "https"
+      rule: "Host(`canon.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: canon
+
+    roberts:
+      entryPoints:
+        - "https"
+      rule: "Host(`roberts.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: roberts
+  
+    NAS:
+      entryPoints:
+        - "https"
+      rule: "Host(`nas.local.slettebakk.com`)"
+      middlewares:
+        - default-headers
+        # - https-redirectscheme
+      tls: {}
+      service: NAS
+
+
+    # endregion
+
+  # Region services
+  services:
+    router:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.1"
+        passHostHeader: true
+
+    ilo:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.63"
+        passHostHeader: true
+
+    ciscoSwitch:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.163"
+        passHostHeader: true
+
+    HomeAssistant:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.99:8123"
+        passHostHeader: true
+
+    ipCamera:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.188"
+        passHostHeader: true
+
+    nginx:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.55"
+        passHostHeader: true
+
+    canon:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.114"
+        passHostHeader: true
+
+    roberts:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.207"
+        passHostHeader: true
+    
+    NAS:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.1.81/ui"
+        passHostHeader: true
+    
+        # endregion
+
+  # Midleware
+  middlewares:
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    default-headers:
+      headers:
+        # frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    default-whitelist:
+      ipAllowList:
+        sourceRange:
+        # - "10.0.0.0/8"
+        - "192.168.1.0/16"
+        - "172.19.0.0/12"
+
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers
